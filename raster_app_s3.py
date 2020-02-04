@@ -75,52 +75,16 @@ def fit_eval(model, X_train, y_train, X_test, y_test):
 def run_model(model, name, rasters=current_rasters):
     st.write("You chose {:s} climate rasters and {:s}".format(name, model))
 
-    #if not os.path.isdir(Path(data_path, '{:s}_{:s}'.format(model, name))):
-    #    os.mkdir(Path(data_path, '{:s}_{:s}'.format(model, name)))
-    #    st.write("Created model directory...")
-
-    # Check if pre-trained model exists:
-    #if not os.path.exists(Path(data_path, '{:s}_{:s}'.format(model, name), 'probability_1.tif')):
-    #    st.write('Training model')
-    #    target_xs, raster_info = load_targets(rasters)
-    #    st.write("Targets loaded")
-    #    m = fit_eval(models[model], *gen_splits())
-    #    impute(target_xs, m, raster_info, outdir=str(data_path)+'/{:s}_{:s}'.format(model, name),
-    #        linechunk=1000, class_prob=True, certainty=False)
-    #    st.write("Predictions completed")
-
-    ref_raster = rasterio.open(str(URL(data_path /
-                                'current_rasters'/ 'Absence_Salinity_today_gps.tif')))
-
-    try:
-        res = rasterio.open(str(URL(data_path/ '{:s}_{:s}'.format(model, name)/ 'probability_1.tif')))
-    except:
-        st.write("This model has not been trained")
-        return
-    masking = ref_raster.read(1, masked=True).mask
-    st.write("Success")
     #st.image(np.where(masking, -0.1, res.read(1, masked=True)))
-    plotit(res, masking, 'something')
+    plotit(model, name, 'something')
     #plotit(np.where(masking, -0.1, res.read(1, masked=True)), 'D. Villosus Suitability', cmap='GnBu')
 
 
-def plotit(x, mask, title, cmap='Blues'):
+def plotit(model, name, title, cmap='Blues'):
 
-    image = x.read(1) # first band
-    image = np.where(mask, -0.1, image)
-    results = ({"type": "Feature", "properties": {"raster_val": v}, "geometry": s}
-    for i, (s, v)
-    in enumerate(
-        shapes(image, mask=x.dataset_mask(), transform=x.transform)))
+    st.write("Loading trained model...")
 
-
-    final_json = {"type": "FeatureCollection",
-                  "totalFeatures": "unknown", "features": list(results)}
-
-    with open('data.json', 'w') as f:
-        json.dump(final_json, f)
-
-    with open("data.json") as f:
+    with open(str(URL(data_path / "models" / f'data_{model}_{name}.json'))) as f:
         data = json.load(f)
 
     geojson = pdk.Layer(
