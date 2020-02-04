@@ -85,7 +85,7 @@ def plotit(model, name, title, cmap='Blues'):
     st.write("Loading trained model...")
 
     json = s3.Object('odf-open-data',
-                        str(URL("models" / f'data_{model}_{name}.json')))
+                        "/data/models/"+f'data_{model}_{name}.json')))
 
 
     file_content = json.get()['Body'].read().decode('utf-8')
