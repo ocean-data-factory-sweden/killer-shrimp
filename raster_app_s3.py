@@ -84,8 +84,15 @@ def plotit(model, name, title, cmap='Blues'):
 
     st.write("Loading trained model...")
 
-    with open(str(URL(data_path / "models" / f'data_{model}_{name}.json'))) as f:
-        data = json.load(f)
+    json = s3.Object('odf-open-data',
+                        str(URL("models" / f'data_{model}_{name}.json')))
+
+
+    file_content = json.get()['Body'].read().decode('utf-8')
+    data = json.loads(file_content)
+
+    #with open(str(URL(data_path / "models" / f'data_{model}_{name}.json'))) as f:
+    #    data = json.load(f)
 
     geojson = pdk.Layer(
         'GeoJsonLayer',
