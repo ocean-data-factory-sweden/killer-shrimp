@@ -18,6 +18,7 @@ from imblearn.ensemble import BalancedRandomForestClassifier
 from sklearn.model_selection import train_test_split
 from yarl import URL
 import boto3
+import urllib.request
 
 st.title('ODF Suitability Modelling - D. Villosus')
 client = boto3.client("s3")
@@ -84,15 +85,11 @@ def plotit(model, name, title, cmap='Blues'):
 
     st.write("Loading trained model...")
 
-    json = client.get_object(Bucket='odf-open-data',
-                        Key="/data/models/"+f'data_{model}_{name}.json')
+    file_path = str(URL(data_path / "models" / f'data_{model}_{name}.json'))
 
-
-    file_content = json['Body'].read().decode('utf-8')
-    data = json.loads(file_content)
-
-    #with open(str(URL(data_path / "models" / f'data_{model}_{name}.json'))) as f:
-    #    data = json.load(f)
+    file = urllib.request.urlopen(file_path)
+    response = file.read().decode('utf-8')
+    data = json.loads(response)
 
     geojson = pdk.Layer(
         'GeoJsonLayer',
