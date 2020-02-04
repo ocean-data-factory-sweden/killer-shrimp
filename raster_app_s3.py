@@ -93,7 +93,7 @@ def run_model(model, name, rasters=current_rasters):
                                 'current_rasters'/ 'Absence_Salinity_today_gps.tif')))
 
     try:
-        res = rasterio.open(str(URL(data_path/ '{:s}_{:s}'.format(model, name)/ 'probability_1.tif')))
+        res = rasterio.open(str(URL(data_path/ '{:s}_{:s}'.format(model, name)/ 'probability_1_compressed.tif')))
     except:
         st.write("This model has not been trained")
         return
