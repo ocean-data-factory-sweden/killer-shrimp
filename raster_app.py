@@ -1,4 +1,4 @@
-import json
+import json, os
 import streamlit as st
 import rasterio
 import numpy as np
@@ -17,22 +17,22 @@ from imblearn.over_sampling import SMOTENC
 from imblearn.ensemble import BalancedRandomForestClassifier
 from sklearn.model_selection import train_test_split
 from pathlib import Path
-from yarl import URL
 
 st.title('ODF Suitability Modelling - D. Villosus')
-data_path = URL("https://odf-open-data.s3.eu-north-1.amazonaws.com/data")
-models = {"RandomForest": RandomForestClassifier(1, n_jobs=8), "BalancedForest": BalancedRandomForestClassifier(10)}
+data_path = Path('../../data')
+models = {"RandomForest": RandomForestClassifier(1, n_jobs=8),
+          "BalancedForest": BalancedRandomForestClassifier(10)}
 
-current_rasters = [str(URL(data_path / 'current_rasters' / 'Absence_Salinity_today_gps.tif')),
-          str(URL(data_path / 'current_rasters' / 'Absence_Temperature_today_gps.tif'))]#,
-          #str(URL(data_path / 'current_rasters'/'Absence_Substrate_gps.tif')),
-          #str(URL(data_path/'current_rasters'/'Absence_Depth_gps.tif')),
-         #str(URL(data_path/'current_rasters'/'Absence_Exposure_gps.tif'))]
-future_rasters = [str(URL(data_path/'future_rasters'/'Absence_Salinity_ClimateChange_gps.tif')),
-          str(URL(data_path/'future_rasters'/'Absence_Temperature_ClimateChange_gps.tif'))]#,
-          #str(URL(data_path/'future_rasters'/'Absence_Substrate_gps.tif')),
-          #str(URL(data_path/'future_rasters'/'Absence_Depth_gps.tif')),
-         #str(URL(data_path/'future_rasters'/'Absence_Exposure_gps.tif'))]
+current_rasters = [str(Path(data_path,'current_rasters', 'Absence_Salinity_today_gps.tif')),
+          str(Path(data_path,'current_rasters', 'Absence_Temperature_today_gps.tif')),
+          str(Path(data_path,'current_rasters', 'Absence_Substrate_gps.tif')),
+          str(Path(data_path,'current_rasters', 'Absence_Depth_gps.tif')),
+         str(Path(data_path,'current_rasters', 'Absence_Exposure_gps.tif'))]
+future_rasters = [str(Path(data_path,'future_rasters', 'Absence_Salinity_ClimateChange_gps.tif')),
+          str(Path(data_path,'future_rasters', 'Absence_Temperature_ClimateChange_gps.tif')),
+          str(Path(data_path,'future_rasters', 'Absence_Substrate_gps.tif')),
+          str(Path(data_path,'future_rasters', 'Absence_Depth_gps.tif')),
+         str(Path(data_path,'future_rasters', 'Absence_Exposure_gps.tif'))]
 
 def main():
     scenario = st.sidebar.selectbox("Choose scenario", ["Current climate", "Future climate"])
@@ -46,10 +46,10 @@ def main():
 
 def gen_splits():
     # data
-    absence_data = pd.read_csv(str(URL(data_path/ "point_sampler"/ "absence"/ "Absence_filter_Nodata_mod100.csv")),
+    absence_data = pd.read_csv(Path(data_path, "point_sampler", "absence", "Absence_filter_Nodata_mod100.csv"),
                                sep=';', index_col=0)
-    presence_data = pd.read_csv(str(URL(data_path/ "point_sampler"/ "presence"/
-                                    "Presence_baltic_manual_fill_missing_data.csv")), sep=';', index_col=0)
+    presence_data = pd.read_csv(Path(data_path, "point_sampler", "presence",
+                                    "Presence_baltic_manual_fill_missing_data.csv"), sep=';', index_col=0)
     absence_data['obs'] = 0; presence_data['obs'] = 1
     data = absence_data.append(presence_data).reset_index()
     data = data[~data.eq(-9999.0).any(1)]
@@ -72,16 +72,24 @@ def fit_eval(model, X_train, y_train, X_test, y_test):
 def run_model(model, name, rasters=current_rasters):
     st.write("You chose {:s} climate rasters and {:s}".format(name, model))
 
-    target_xs, raster_info = load_targets(rasters)
-    st.write("Targets loaded")
-    m = fit_eval(models[model], *gen_splits())
-    st.write('this worked')
-    impute(target_xs, m, raster_info, outdir=str(data_path),
-        linechunk=1000, class_prob=True, certainty=False)
-    st.write("Predictions completed")
-    ref_raster = rasterio.open(str(URL(data_path/
-                                'current_rasters' / 'Absence_Salinity_today_gps.tif')))
-    res = rasterio.open(str(URL(data_path /  'probability_1.tif')))
+    if not os.path.isdir(Path(data_path, '{:s}_{:s}'.format(model, name))):
+        os.mkdir(Path(data_path, '{:s}_{:s}'.format(model, name)))
+        st.write("Created model directory...")
+
+    # Check if pre-trained model exists:
+    if not os.path.exists(Path(data_path, '{:s}_{:s}'.format(model, name), 'probability_1.tif')):
+        st.write('Training model')
+        target_xs, raster_info = load_targets(rasters)
+        st.write("Targets loaded")
+        m = fit_eval(models[model], *gen_splits())
+        impute(target_xs, m, raster_info, outdir=str(data_path)+'/{:s}_{:s}'.format(model, name),
+            linechunk=1000, class_prob=True, certainty=False)
+        st.write("Predictions completed")
+
+    ref_raster = rasterio.open(Path(data_path,
+                                'current_rasters', 'Absence_Salinity_today_gps.tif'))
+
+    res = rasterio.open(Path(data_path, '{:s}_{:s}'.format(model, name), 'probability_1.tif'))
     masking = ref_raster.read(1, masked=True).mask
     st.write("Success")
     #st.image(np.where(masking, -0.1, res.read(1, masked=True)))
