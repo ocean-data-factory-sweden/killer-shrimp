@@ -20,7 +20,7 @@ from yarl import URL
 import boto3
 
 st.title('ODF Suitability Modelling - D. Villosus')
-s3 = boto3.client("s3")
+s3 = boto3.resource("s3")
 
 data_path = URL('https://odf-open-data.s3.eu-north-1.amazonaws.com/data')
 models = {"RandomForest": RandomForestClassifier(1, n_jobs=8),
