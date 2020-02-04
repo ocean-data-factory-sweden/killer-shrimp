@@ -19,7 +19,7 @@ from sklearn.model_selection import train_test_split
 from pathlib import Path
 
 st.title('ODF Suitability Modelling - D. Villosus')
-data_path = Path("http://s3.amazonaws.com/odf-open-data/data")
+data_path = Path("https://odf-open-data.s3.eu-north-1.amazonaws.com/data")
 models = {"RandomForest": RandomForestClassifier(1, n_jobs=8), "BalancedForest": BalancedRandomForestClassifier(10)}
 
 current_rasters = [str(Path(data_path,'current_rasters','Absence_Salinity_today_gps.tif')),
