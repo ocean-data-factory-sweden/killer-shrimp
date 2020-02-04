@@ -19,7 +19,7 @@ from sklearn.model_selection import train_test_split
 from pathlib import Path
 
 st.title('ODF Suitability Modelling - D. Villosus')
-data_path = Path('../../data')
+data_path = Path('../../../data')
 models = {"RandomForest": RandomForestClassifier(1, n_jobs=8),
           "BalancedForest": BalancedRandomForestClassifier(10)}
 
@@ -92,12 +92,12 @@ def run_model(model, name, rasters=current_rasters):
     res = rasterio.open(Path(data_path, '{:s}_{:s}'.format(model, name), 'probability_1.tif'))
     masking = ref_raster.read(1, masked=True).mask
     st.write("Success")
-    #st.image(np.where(masking, -0.1, res.read(1, masked=True)))
-    plotit(res, masking, 'something')
+    plotit(res, masking, model, name, 'something')
     #plotit(np.where(masking, -0.1, res.read(1, masked=True)), 'D. Villosus Suitability', cmap='GnBu')
 
 
-def plotit(x, mask, title, cmap='Blues'):
+
+def plotit(x, mask, model, name, title, cmap='Blues'):
 
     image = x.read(1) # first band
     image = np.where(mask, -0.1, image)
@@ -106,14 +106,16 @@ def plotit(x, mask, title, cmap='Blues'):
     in enumerate(
         shapes(image, mask=x.dataset_mask(), transform=x.transform)))
 
-
+    st.write('Creating JSONLLLL')
     final_json = {"type": "FeatureCollection",
                   "totalFeatures": "unknown", "features": list(results)}
 
-    with open('data.json', 'w') as f:
+    with open(f'data_{model}_{name}.json', 'w') as f:
         json.dump(final_json, f)
 
-    with open("data.json") as f:
+    st.write('Model saved', f'data_{model}_{name}.json')
+
+    with open(f'data_{model}_{name}.json') as f:
         data = json.load(f)
 
     geojson = pdk.Layer(
