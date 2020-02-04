@@ -26,16 +26,16 @@ data_path = URL('https://odf-open-data.s3.eu-north-1.amazonaws.com/data')
 models = {"RandomForest": RandomForestClassifier(1, n_jobs=8),
           "BalancedForest": BalancedRandomForestClassifier(10)}
 
-current_rasters = [str(URL(data_path,'current_rasters' / 'Absence_Salinity_today_gps.tif')),
-          str(URL(data_path,'current_rasters'/ 'Absence_Temperature_today_gps.tif')),
-          str(URL(data_path,'current_rasters'/ 'Absence_Substrate_gps.tif')),
-          str(URL(data_path,'current_rasters'/ 'Absence_Depth_gps.tif')),
-         str(URL(data_path,'current_rasters'/'Absence_Exposure_gps.tif'))]
-future_rasters = [str(URL(data_path,'future_rasters'/ 'Absence_Salinity_ClimateChange_gps.tif')),
-          str(URL(data_path,'future_rasters'/ 'Absence_Temperature_ClimateChange_gps.tif')),
-          str(URL(data_path,'future_rasters'/ 'Absence_Substrate_gps.tif')),
-          str(URL(data_path,'future_rasters'/ 'Absence_Depth_gps.tif')),
-         str(URL(data_path,'future_rasters'/ 'Absence_Exposure_gps.tif'))]
+current_rasters = [str(URL(data_path/'current_rasters' / 'Absence_Salinity_today_gps.tif')),
+          str(URL(data_path/'current_rasters'/ 'Absence_Temperature_today_gps.tif')),
+          str(URL(data_path/'current_rasters'/ 'Absence_Substrate_gps.tif')),
+          str(URL(data_path/'current_rasters'/ 'Absence_Depth_gps.tif')),
+         str(URL(data_path/'current_rasters'/'Absence_Exposure_gps.tif'))]
+future_rasters = [str(URL(data_path/'future_rasters'/ 'Absence_Salinity_ClimateChange_gps.tif')),
+          str(URL(data_path/'future_rasters'/ 'Absence_Temperature_ClimateChange_gps.tif')),
+          str(URL(data_path/'future_rasters'/ 'Absence_Substrate_gps.tif')),
+          str(URL(data_path/'future_rasters'/ 'Absence_Depth_gps.tif')),
+         str(URL(data_path/'future_rasters'/ 'Absence_Exposure_gps.tif'))]
 
 def main():
     scenario = st.sidebar.selectbox("Choose scenario", ["Current climate", "Future climate"])
