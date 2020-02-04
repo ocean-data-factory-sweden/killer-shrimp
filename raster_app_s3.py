@@ -84,8 +84,8 @@ def plotit(model, name, title, cmap='Blues'):
 
     st.write("Loading trained model...")
 
-    json = client.get_object('odf-open-data',
-                        "/data/models/"+f'data_{model}_{name}.json')
+    json = client.get_object(Bucket='odf-open-data',
+                        Key="/data/models/"+f'data_{model}_{name}.json')
 
 
     file_content = json['Body'].read().decode('utf-8')
