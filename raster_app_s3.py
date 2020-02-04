@@ -20,7 +20,7 @@ from yarl import URL
 import boto3
 
 st.title('ODF Suitability Modelling - D. Villosus')
-s3 = boto3.resource("s3")
+client = boto3.client("s3")
 
 data_path = URL('https://odf-open-data.s3.eu-north-1.amazonaws.com/data')
 models = {"RandomForest": RandomForestClassifier(1, n_jobs=8),
@@ -84,11 +84,11 @@ def plotit(model, name, title, cmap='Blues'):
 
     st.write("Loading trained model...")
 
-    json = s3.Object('odf-open-data',
+    json = client.get_object('odf-open-data',
                         "/data/models/"+f'data_{model}_{name}.json')
 
 
-    file_content = json.get()['Body'].read().decode('utf-8')
+    file_content = json['Body'].read().decode('utf-8')
     data = json.loads(file_content)
 
     #with open(str(URL(data_path / "models" / f'data_{model}_{name}.json'))) as f:
