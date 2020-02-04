@@ -46,10 +46,10 @@ def main():
 
 def gen_splits():
     # data
-    absence_data = pd.read_csv(URL(data_path/ "point_sampler"/ "absence"/ "Absence_filter_Nodata_mod100.csv"),
+    absence_data = pd.read_csv(str(URL(data_path/ "point_sampler"/ "absence"/ "Absence_filter_Nodata_mod100.csv")),
                                sep=';', index_col=0)
-    presence_data = pd.read_csv(URL(data_path/ "point_sampler"/ "presence"/
-                                    "Presence_baltic_manual_fill_missing_data.csv"), sep=';', index_col=0)
+    presence_data = pd.read_csv(str(URL(data_path/ "point_sampler"/ "presence"/
+                                    "Presence_baltic_manual_fill_missing_data.csv")), sep=';', index_col=0)
     absence_data['obs'] = 0; presence_data['obs'] = 1
     data = absence_data.append(presence_data).reset_index()
     data = data[~data.eq(-9999.0).any(1)]
@@ -79,9 +79,9 @@ def run_model(model, name, rasters=current_rasters):
     impute(target_xs, m, raster_info, outdir=str(data_path),
         linechunk=1000, class_prob=True, certainty=False)
     st.write("Predictions completed")
-    ref_raster = rasterio.open(URL(data_path/
-                                'current_rasters' / 'Absence_Salinity_today_gps.tif'))
-    res = rasterio.open(URL(data_path /  'probability_1.tif'))
+    ref_raster = rasterio.open(str(URL(data_path/
+                                'current_rasters' / 'Absence_Salinity_today_gps.tif')))
+    res = rasterio.open(str(URL(data_path /  'probability_1.tif')))
     masking = ref_raster.read(1, masked=True).mask
     st.write("Success")
     #st.image(np.where(masking, -0.1, res.read(1, masked=True)))
