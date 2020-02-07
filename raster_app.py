@@ -18,7 +18,10 @@ from imblearn.ensemble import BalancedRandomForestClassifier
 from sklearn.model_selection import train_test_split
 from pathlib import Path
 
-st.title('ODF Suitability Modelling - D. Villosus')
+
+placeholder = st.empty()
+placeholder.title('ODF Suitability Modelling - D. Villosus')
+#st.title()
 data_path = Path('../../../data')
 models = {"RandomForest": RandomForestClassifier(1, n_jobs=8),
           "BalancedForest": BalancedRandomForestClassifier(10)}
@@ -70,7 +73,7 @@ def fit_eval(model, X_train, y_train, X_test, y_test):
     return m
 
 def run_model(model, name, rasters=current_rasters):
-    st.write("You chose {:s} climate rasters and {:s}".format(name, model))
+    placeholder.title("You chose {:s} climate rasters and {:s}".format(name, model))
 
     if not os.path.isdir(Path(data_path, '{:s}_{:s}'.format(model, name))):
         os.mkdir(Path(data_path, '{:s}_{:s}'.format(model, name)))
@@ -106,14 +109,14 @@ def plotit(x, mask, model, name, title, cmap='Blues'):
     in enumerate(
         shapes(image, mask=x.dataset_mask(), transform=x.transform)))
 
-    st.write('Creating JSONLLLL')
+    #st.write('Creating JSONLLLL')
     final_json = {"type": "FeatureCollection",
                   "totalFeatures": "unknown", "features": list(results)}
 
     with open(f'data_{model}_{name}.json', 'w') as f:
         json.dump(final_json, f)
 
-    st.write('Model saved', f'data_{model}_{name}.json')
+    #st.write('Model saved', f'data_{model}_{name}.json')
 
     with open(f'data_{model}_{name}.json') as f:
         data = json.load(f)
@@ -141,9 +144,10 @@ def plotit(x, mask, model, name, title, cmap='Blues'):
       bearing=0
     )
 
-    st.title("Suitability Map")
+    placeholder.title("Suitability Map")
     r = pdk.Deck(map_style="mapbox://styles/mapbox/light-v9",layers=[geojson],
                 initial_view_state=INITIAL_VIEW_STATE)
+
     st.write(r) # == st.deck_json_chart
 
 

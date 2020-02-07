@@ -20,7 +20,8 @@ from yarl import URL
 import boto3
 import urllib.request
 
-st.title('ODF Suitability Modelling - D. Villosus')
+placeholder = st.empty()
+placeholder.title('ODF Suitability Modelling - D. Villosus')
 client = boto3.client("s3")
 
 data_path = URL('https://odf-open-data.s3.eu-north-1.amazonaws.com/data')
@@ -74,7 +75,7 @@ def fit_eval(model, X_train, y_train, X_test, y_test):
     return m
 
 def run_model(model, name, rasters=current_rasters):
-    st.write("You chose {:s} climate rasters and {:s}".format(name, model))
+    placeholder.title("You chose {:s} climate rasters and {:s}".format(name, model))
 
     #st.image(np.where(masking, -0.1, res.read(1, masked=True)))
     plotit(model, name, 'something')
@@ -114,9 +115,11 @@ def plotit(model, name, title, cmap='Blues'):
       bearing=0
     )
 
-    st.title("Suitability Map")
+
+    placeholder.title("Suitability Map")
     r = pdk.Deck(map_style="mapbox://styles/mapbox/light-v9",layers=[geojson],
                 initial_view_state=INITIAL_VIEW_STATE)
+
     st.write(r) # == st.deck_json_chart
 
 
