@@ -21,6 +21,7 @@ import boto3
 import urllib.request
 
 placeholder = st.empty()
+placeholder_1 = st.empty()
 placeholder.title('ODF Suitability Modelling - D. Villosus')
 client = boto3.client("s3")
 
@@ -84,7 +85,7 @@ def run_model(model, name, rasters=current_rasters):
 
 def plotit(model, name, title, cmap='Blues'):
 
-    st.write("Loading trained model...")
+    placeholder.header("Loading trained model...")
 
     file_path = str(URL(data_path / "models" / f'data_{model}_{name}.json'))
 
@@ -119,7 +120,8 @@ def plotit(model, name, title, cmap='Blues'):
     placeholder.title("Suitability Map")
     r = pdk.Deck(map_style="mapbox://styles/mapbox/light-v9",layers=[geojson],
                 initial_view_state=INITIAL_VIEW_STATE)
-
+    placeholder.empty()
+    placeholder_1.empty()
     st.write(r) # == st.deck_json_chart
 
 
