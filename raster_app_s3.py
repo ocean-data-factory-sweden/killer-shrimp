@@ -42,7 +42,7 @@ future_rasters = [str(URL(data_path/'future_rasters'/ 'Absence_Salinity_ClimateC
 
 def main():
     scenario = st.sidebar.selectbox("Choose scenario", ["Current climate", "Future climate"])
-    model = st.sidebar.selectbox("Choose model", "DummyClassifier",
+    model = st.sidebar.selectbox("Choose model", ["DummyClassifier",
     "DecisionTree", "RandomForest"])
     st.sidebar.markdown('Click to run model')
     submit = st.sidebar.button('Train and Plot')
